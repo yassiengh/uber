@@ -2,9 +2,10 @@ const queryPromise = require("./../queryPromise");
 
 exports.signup = async (req, res) => {
   try {
-    const { userName, email, password, PN, type, license, FavArea } = req.body;
+    const { userName, email, password, PN, type, license, FavArea, birthday } =
+      req.body;
 
-    var sql = `INSERT INTO user (userName, email, password, phoneNumber, type) VALUES ('${userName}','${email}', '${password}','${PN}','${type}')`;
+    var sql = `INSERT INTO user (userName, email, password, phoneNumber, type, birthday) VALUES ('${userName}','${email}', '${password}','${PN}','${type}','${birthday}')`;
 
     await queryPromise.asyncQuery(sql, {});
 

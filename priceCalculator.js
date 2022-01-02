@@ -24,7 +24,7 @@ exports.calcPrice = async (req, res, price) => {
     }
 
     //check if its users first trip
-    var sql = `SELECT * FROM completedrides WHERE userID=${userInfo.userID}`;
+    var sql = `SELECT * FROM completedride WHERE userID=${userInfo.userID}`;
     const firstRide = await queryPromise.asyncQuery(sql, {});
     if (!firstRide[0]) {
       fair = fair * 0.9;
@@ -32,7 +32,7 @@ exports.calcPrice = async (req, res, price) => {
 
     // check discounts for Destinatation
 
-    sql = `SELECT * FROM requestedrides WHERE userID = ${userInfo.userID} ORDER BY RequestRideID DESC LIMIT 1`;
+    sql = `SELECT * FROM requestedrides WHERE userID = ${userInfo.userID} ORDER BY RequestedRideID DESC LIMIT 1`;
     const requestedRide = await queryPromise.asyncQuery(sql, {});
     const Des = requestedRide[0].des;
     sql = `SELECT * FROM discounts WHERE Area='${Des}'`;

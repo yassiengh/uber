@@ -87,7 +87,7 @@ exports.finalizeTripInfo = async (req, res, fair) => {
       await queryPromise.asyncQuery(sql, {});
     }
 
-    res.status(200).json({});
+    res.status(200).json({ message: "your fair is " + fair });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
