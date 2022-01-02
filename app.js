@@ -2,6 +2,7 @@ const express = require("express");
 const session = require("express-session");
 
 const userRouter = require("./Routes/userRoute");
+const adminRouter = require("./Routes/adminRoute");
 
 const app = express();
 
@@ -13,5 +14,6 @@ app.use(session({ secret: "idk", resave: false, saveUninitialized: false }));
 
 // routes
 app.use("/uber/users", userRouter);
+app.use("/uber/admin", adminRouter);
 
 module.exports = app;

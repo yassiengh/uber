@@ -1,20 +1,29 @@
-const con = require("./../dbConnection");
 const queryPromise = require("./../queryPromise");
 
-exports.signup = (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+exports.signup = async (req, res) => {
+  try {
+    const { userName, email, password, PN, type, license, FavArea } = req.body;
 
-  const sql = `INSERT INTO user (email, password) VALUES ('${email}', '${password}')`;
+    var sql = `INSERT INTO user (userName, email, password, phoneNumber, type) VALUES ('${userName}','${email}', '${password}','${PN}','${type}')`;
 
-  con.query(sql, function (err) {
-    if (err) throw err;
-    console.log("1 record inserted");
-  });
+    await queryPromise.asyncQuery(sql, {});
 
-  res.status(200).json({
-    status: "success",
-  });
+    if (type === "driver") {
+      sql = `SELECT * FROM user Where email='${email}'`;
+      const response = await queryPromise.asyncQuery(sql, {});
+      const userID = response[0].userID;
+      sql =
+        `INSERT INTO registrationform (userID,license,favouriteArea)` +
+        `VALUES ('${userID}','${license}','${FavArea}')`;
+      await queryPromise.asyncQuery(sql, {});
+    }
+
+    res.status(200).json({
+      status: "success",
+    });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
 };
 
 exports.login = async (req, res) => {
@@ -65,5 +74,12 @@ exports.acceptOffer = async (req, res) => {
   res.status(200).json({
     status: "success",
     data: { sql },
+  });
+};
+
+exports.betengana = (req, res) => {
+  const ID = req.body.formID;
+  res.status(200).json({
+    ID,
   });
 };
