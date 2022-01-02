@@ -8,5 +8,6 @@ const router = express.Router();
 router.route("/requestride").post(customerController.requestRide);
 router.route("/getalloffers").get(customerController.getAllOffers);
 router.route("/acceptoffer").post(customerController.AcceptOffer);
+router.route("/finishtrip").post(customerController.finishTrip);
 
 module.exports = router;

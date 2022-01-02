@@ -106,12 +106,16 @@ exports.finishTrip = async (req, res) => {
     const driverProfile = await queryPromise.asyncQuery(sql);
     const balance = driverProfile[0].Balance + RideInfo[0].offeredPrice;
     sql = `UPDATE driver SET Balance = '${balance}', Status = '1', CurrentArea = '${Des}' WHERE driverID = '${driverInfo.userID}'`;
+    await queryPromise.asyncQuery(sql, {});
 
+    // remove ride from tables if both users confirmed
     if (RideInfo[0].confirm == 0) {
       sql = `UPDATE activerides SET confirm = '1' WHERE ActiveRideID = '${RideInfo[0].ActiveRideID}'`;
       await queryPromise.asyncQuery(sql, {});
     } else {
       sql = `DELETE FROM activerides WHERE ActiveRideID = '${RideInfo[0].ActiveRideID}'`;
+      await queryPromise.asyncQuery(sql, {});
+      sql = `DELETE FROM requestedrides WHERE RequestedRideID = '${RideInfo[0].RequestedRideID}'`;
       await queryPromise.asyncQuery(sql, {});
     }
 

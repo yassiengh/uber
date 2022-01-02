@@ -14,6 +14,19 @@ exports.AddDiscountForArea = async (req, res, next) => {
   }
 };
 
+exports.removeDiscountForArea = async (req, res, next) => {
+  try {
+    const area = req.body.area;
+    var sql = `DELETE FROM discounts WHERE Area = '${area}'`;
+    await queryPromise.asyncQuery(sql, {});
+    res.status(200).json({
+      message: area + " removed from discounted areas",
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 exports.AddHoliday = async (req, res) => {
   try {
     const date = req.body.date;
@@ -48,17 +61,4 @@ exports.removeHoliday = async (req, res) => {
       message: date + " holiday deleted",
     });
   } catch (err) {}
-};
-
-exports.removeDiscountForArea = async (req, res, next) => {
-  try {
-    const area = req.body.area;
-    var sql = `DELETE FROM discounts WHERE Area = '${area}'`;
-    await queryPromise.asyncQuery(sql, {});
-    res.status(200).json({
-      message: area + " removed from discounted areas",
-    });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
 };

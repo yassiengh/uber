@@ -1,4 +1,5 @@
 const queryPromise = require("./../queryPromise");
+const priceCalculator = require("./../priceCalculator");
 
 exports.requestRide = async (req, res) => {
   try {
@@ -40,7 +41,7 @@ exports.AcceptOffer = async (req, res) => {
     const userID = req.session.user[0].userID;
     var sql = `SELECT * FROM offers WHERE OfferID = '${offerID}'`;
     const offerData = await queryPromise.asyncQuery(sql, {});
-    sql = `DELETE FROM offers WHERE OfferID = '${offerID}'`;
+    sql = `DELETE FROM offers WHERE RequestedRideID = '${offerData[0].RequestedRideID}'`;
     await queryPromise.asyncQuery(sql, {});
     const time = Date.now();
     sql =
@@ -50,7 +51,43 @@ exports.AcceptOffer = async (req, res) => {
     await queryPromise.asyncQuery(sql, {});
     sql = `UPDATE driver SET status = 0 WHERE driverID = '${offerData[0].driverID}'`;
     await queryPromise.asyncQuery(sql, {});
-    res.status(200).json({ sql });
+    res
+      .status(200)
+      .json({ message: "offer accepted, your driver is on his way" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.finishTrip = async (req, res) => {
+  try {
+    const userInfo = req.session.user[0];
+    var sql = `SELECT * FROM activerides WHERE userID = '${userInfo.userID}' ORDER BY ActiveRideID DESC LIMIT 1`;
+    const activeRideInfo = await queryPromise.asyncQuery(sql, {});
+    const price = activeRideInfo[0].offeredPrice;
+
+    priceCalculator.calcPrice(req, res, price);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.finalizeTripInfo = async (req, res, fair) => {
+  try {
+    var sql = `SELECT * FROM activerides WHERE userID ='${req.session.user[0].userID}' ORDER BY ActiveRideID DESC LIMIT 1`;
+    const RideInfo = await queryPromise.asyncQuery(sql, {});
+
+    if (RideInfo[0].confirm == 0) {
+      sql = `UPDATE activerides SET confirm = '1' WHERE ActiveRideID = '${RideInfo[0].ActiveRideID}'`;
+      await queryPromise.asyncQuery(sql, {});
+    } else {
+      sql = `DELETE FROM activerides WHERE ActiveRideID = '${RideInfo[0].ActiveRideID}'`;
+      await queryPromise.asyncQuery(sql, {});
+      sql = `DELETE FROM requestedrides WHERE RequestedRideID = '${RideInfo[0].RequestedRideID}'`;
+      await queryPromise.asyncQuery(sql, {});
+    }
+
+    res.status(200).json({});
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

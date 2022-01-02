@@ -61,18 +61,3 @@ exports.login = async (req, res) => {
     });
   }
 };
-
-exports.acceptOffer = async (req, res) => {
-  const price = req.body.price;
-  const eventName = "Accept Offer";
-  const userName = req.session.user[0].userName;
-
-  const sql = `INSERT INTO rideData (price,eventName,userName) Values ('${price}','${eventName}',${userName})`;
-
-  let response = await queryPromise.asyncQuery(sql, {});
-
-  res.status(200).json({
-    status: "success",
-    data: { sql },
-  });
-};
