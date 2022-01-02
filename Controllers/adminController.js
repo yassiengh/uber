@@ -1,7 +1,5 @@
+const { json } = require("body-parser");
 const queryPromise = require("./../queryPromise");
-exports.AddDiscountForArea = (req, res, next) => {
-  const area = req.body.area;
-};
 
 exports.GetAllForms = async (req, res) => {
   try {

@@ -39,12 +39,12 @@ exports.login = async (req, res) => {
     const sql = `SELECT * FROM user Where email='${email}'`;
     let response = await queryPromise.asyncQuery(sql, {});
 
-    if (!response || response[0].password != password) {
-      console.log(response, password);
+    if (!response[0] || response[0].password != password) {
       return res.status(400).json({
-        message: "Invalid password",
+        message: "Invalid email or password",
       });
     }
+
     delete req.session.user;
     req.session.user = response;
 
@@ -55,9 +55,9 @@ exports.login = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(404).json({
+    res.status(400).json({
       status: "fail",
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -74,12 +74,5 @@ exports.acceptOffer = async (req, res) => {
   res.status(200).json({
     status: "success",
     data: { sql },
-  });
-};
-
-exports.betengana = (req, res) => {
-  const ID = req.body.formID;
-  res.status(200).json({
-    ID,
   });
 };
